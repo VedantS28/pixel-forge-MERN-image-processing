@@ -89,7 +89,7 @@ function App() {
     formData.append('file', file);
   
     try {
-      const response = await axios.post('http://localhost:5000/api/images/upload', formData, {
+      const response = await axios.post(`https://pixel-forge-mern-image-processing.onrender.com/api/images/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setImageId(response.data._id);
@@ -114,7 +114,7 @@ function App() {
     
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/images/${imageId}/transform`,
+        `https://pixel-forge-mern-image-processing.onrender.com/api/images/${imageId}/transform`,
         { transformations: transformationsCopy },
         { responseType: 'blob', headers: { 'Content-Type': 'application/json' } }
       );
