@@ -1,4 +1,4 @@
-const Image = require('../models/image');
+const Image = require('../models/Image');
 const { processImage } = require('../utils/imageProcessor');
 const multer = require('multer');
 const path = require('path');
@@ -30,7 +30,7 @@ exports.uploadImage = async (req, res) => {
         const fileName = `${Date.now()}_${path.basename(file.originalname)}`;
         const filePath = path.join(UPLOAD_DIR, fileName);
         await fs.writeFile(filePath, file.buffer);
-        const fileUrl = `http://localhost:3000/${filePath}`; // Adjust URL as needed
+        const fileUrl = `http://localhost:3000/${filePath}`; 
         const newImage = new Image({
             url: fileUrl,
         });
@@ -54,8 +54,16 @@ exports.transformImage = async (req, res) => {
         const filePath = image.url.replace('http://localhost:3000/', ''); // Adjust URL replacement as needed
         const fileBuffer = await fs.readFile(filePath);
 
+        // Convert transformation parameters to integers where necessary
+        const transformations = { ...req.body.transformations };
+        if (transformations.width) {
+            transformations.width = parseInt(transformations.width, 10);
+        }
+         if (transformations.height) {
+            transformations.height = parseInt(transformations.height, 10);
+        }
         // Process the image using the file buffer and transformations object
-        const transformedImage = await processImage(fileBuffer, req.body.transformations);
+        const transformedImage = await processImage(fileBuffer, transformations);
 
         res.set('Content-Type', 'image/jpeg');
         res.send(transformedImage);
