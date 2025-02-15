@@ -6,6 +6,50 @@ import TransformSection from './components/TransformSection';
 import ComparisonSection from './components/ComparisonSection';
 import { comparisonStyles } from './styles/comparisonStyles';
 
+const themeStyles = `
+  :root {
+    --theme-primary: #3674B5;
+    --theme-secondary: #578FCA;
+    --theme-accent: #578FCA;
+    --theme-background: #D1F8EF;
+  }
+  
+  body, .container {
+    background-color: var(--theme-background);
+  }
+  
+  .card-header.bg-info {
+    background-color: var(--theme-primary) !important;
+  }
+  
+  .card-header.bg-primary {
+    background-color: var(--theme-secondary) !important;
+  }
+  
+  .card-header.bg-success {
+    background-color: var(--theme-accent) !important;
+  }
+  
+  /* Heading Style */
+  .app-heading {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--theme-primary);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    margin-bottom: 1.5rem;
+  }
+  
+  /* For large screens, force row to be a flex container with same height columns */
+  @media (min-width: 992px) {
+    .full-height {
+      display: flex;
+      align-items: stretch;
+    }
+  }
+`;
+  
 function App() {
   const [file, setFile] = useState(null);
   const [imageId, setImageId] = useState('');
@@ -139,31 +183,43 @@ function App() {
 
   return (
     <div className="container my-5">
+      <style>{themeStyles}</style>
       <style>{comparisonStyles}</style>
-      <h1 className="text-center mb-4">Pixel Forge - Image Processing Tool</h1>
-      
-      <UploadSection 
-        handleFileChange={handleFileChange}
-        handleUpload={handleUpload}
-      />
-
-      <TransformSection 
-        transformations={transformations}
-        handleTransformChange={handleTransformChange}
-        isCropEnabled={isCropEnabled}
-        setIsCropEnabled={setIsCropEnabled}
-        handleTransform={handleTransform}
-      />
-
-      {transformedImageUrl && originalImageUrl && (
-        <ComparisonSection 
-          transformedImageUrl={transformedImageUrl}
-          originalImageUrl={originalImageUrl}
-          sliderPosition={sliderPosition}
-          handleMouseDown={handleMouseDown}
-          handleDownload={handleDownload}
-        />
-      )}
+      <h1 className="text-center mb-4 app-heading">Pixel Forge </h1>
+      <div className="row full-height">
+        {/* Preview column: 75% width on large screens (col-lg-9) */}
+        <div className="col-lg-9 order-2 order-lg-1 mb-4" style={{ display: 'flex', flexDirection: 'column' }}>
+          {transformedImageUrl && originalImageUrl ? (
+            <ComparisonSection
+              transformedImageUrl={transformedImageUrl}
+              originalImageUrl={originalImageUrl}
+              sliderPosition={sliderPosition}
+              handleMouseDown={handleMouseDown}
+              handleDownload={handleDownload}
+            />
+          ) : (
+            <div className="card shadow-sm flex-grow-1">
+              <div className="card-body text-center d-flex align-items-center justify-content-center">
+                <p>No image preview available.</p>
+              </div>
+            </div>
+          )}
+        </div>
+        {/* Control column: 25% width on large screens (col-lg-3) */}
+        <div className="col-lg-3 order-1 order-lg-2 d-flex flex-column gap-3">
+          <UploadSection 
+            handleFileChange={handleFileChange}
+            handleUpload={handleUpload}
+          />
+          <TransformSection 
+            transformations={transformations}
+            handleTransformChange={handleTransformChange}
+            isCropEnabled={isCropEnabled}
+            setIsCropEnabled={setIsCropEnabled}
+            handleTransform={handleTransform}
+          />
+        </div>
+      </div>
     </div>
   );
 }
