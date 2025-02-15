@@ -17,7 +17,7 @@ function ComparisonSection({
           className="image-comparison"
           style={{ "--slider-position": `${sliderPosition}%` }}
           onMouseDown={handleMouseDown}
-          onTouchStart={handleMouseDown} // Add touch support
+          onTouchStart={handleMouseDown} 
         >
           <img
             src={transformedImageUrl}

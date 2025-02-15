@@ -63,8 +63,8 @@ function App() {
   };
 
   const handleMouseDown = (e) => {
-    e.preventDefault(); // Prevent text selection while dragging
-    handleSliderDrag(e); // Update position immediately on mouse down
+    e.preventDefault(); 
+    handleSliderDrag(e);
     
     const handleMouseMove = (e) => {
       handleSliderDrag(e);
