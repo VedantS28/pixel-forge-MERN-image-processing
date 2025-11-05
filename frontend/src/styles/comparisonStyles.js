@@ -2,12 +2,13 @@ export const comparisonStyles = `
   .image-comparison {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 100%;
     overflow: hidden;
     border-radius: 8px;
-    margin: 20px 0;
+    margin: 20px auto;
     user-select: none;
     touch-action: none; /* Prevent scrolling on touch devices */
+    background-color: #f0f0f0; /* Light gray background */
   }
   
   .image-comparison img {

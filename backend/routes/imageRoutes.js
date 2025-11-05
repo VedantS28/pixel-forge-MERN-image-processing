@@ -8,6 +8,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 router.post('/upload', upload.single('file'), imageController.uploadImage);
-router.post('/:id/transform', imageController.transformImage);
+router.post('/:filename/transform', imageController.transformImage);
+router.delete('/cleanup/:sessionId', imageController.cleanupSession);
 
 module.exports = router;
