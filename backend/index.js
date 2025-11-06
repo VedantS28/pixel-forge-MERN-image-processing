@@ -6,16 +6,34 @@ const imageRoutes = require('./routes/imageRoutes');
 
 const app = express();
 
-// Init Middleware
+// Init Middleware - Allow all origins for now
 app.use(cors({
     origin: '*', 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'x-session-id']
+    allowedHeaders: ['Content-Type', 'x-session-id', 'Authorization'],
+    credentials: false
 }));
 app.use(express.json());
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Health check endpoint
+app.get('/', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        message: 'Pixel Forge API is running',
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'healthy',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
+    });
+});
 
 // Define Routes
 app.use('/api/images', imageRoutes);
