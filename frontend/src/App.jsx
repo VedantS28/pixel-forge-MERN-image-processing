@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import UploadSection from './components/UploadSection';
 import TransformSection from './components/TransformSection';
@@ -34,6 +34,71 @@ function App() {
     enableCompress: false,
     enableTint: false,
   });
+
+  // Debounce timer ref for transformations
+  const debounceTimerRef = useRef(null);
+
+  // Main transformation application function
+  const applyTransformations = useCallback(async (transformationsToApply) => {
+    if (!filename) return;
+
+    // Filter out disabled transformations
+    const filteredTransformations = { ...transformationsToApply };
+    
+    // Remove compress if not enabled
+    if (!transformationsToApply.enableCompress) {
+      delete filteredTransformations.compress;
+    }
+    
+    // Remove tint if not enabled
+    if (!transformationsToApply.enableTint) {
+      delete filteredTransformations.tint;
+    }
+    
+    // Remove blur if it's 0
+    if (transformationsToApply.blur === 0) {
+      delete filteredTransformations.blur;
+    }
+    
+    // Remove enable flags before sending to API
+    delete filteredTransformations.enableCompress;
+    delete filteredTransformations.enableTint;
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/images/${filename}/transform`,
+        { transformations: filteredTransformations },
+        { responseType: 'blob', headers: { 'Content-Type': 'application/json' } }
+      );
+      const imageUrl = URL.createObjectURL(response.data);
+      setTransformedImageUrl(imageUrl);
+      setTransformedFileSize(response.data.size);
+    } catch (error) {
+      console.error('Transform error:', error);
+    }
+  }, [filename]);
+
+  // Debounced transformation application
+  const applyTransformationsDebounced = useCallback((transformationsToApply) => {
+    // Clear existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Set new timer (wait 500ms after last change)
+    debounceTimerRef.current = setTimeout(() => {
+      applyTransformations(transformationsToApply);
+    }, 500);
+  }, [applyTransformations]);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   // Generate session ID on component mount
   useEffect(() => {
@@ -99,48 +164,15 @@ function App() {
     
     setTransformations(newTransformations);
     
-    // Auto-apply transformation
+    // Auto-apply transformation with debouncing for sliders and number inputs
     if (filename) {
-      applyTransformations(newTransformations);
-    }
-  };
-
-  const applyTransformations = async (transformationsToApply) => {
-    if (!filename) return;
-
-    // Filter out disabled transformations
-    const filteredTransformations = { ...transformationsToApply };
-    
-    // Remove compress if not enabled
-    if (!transformationsToApply.enableCompress) {
-      delete filteredTransformations.compress;
-    }
-    
-    // Remove tint if not enabled
-    if (!transformationsToApply.enableTint) {
-      delete filteredTransformations.tint;
-    }
-    
-    // Remove blur if it's 0
-    if (transformationsToApply.blur === 0) {
-      delete filteredTransformations.blur;
-    }
-    
-    // Remove enable flags before sending to API
-    delete filteredTransformations.enableCompress;
-    delete filteredTransformations.enableTint;
-
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/images/${filename}/transform`,
-        { transformations: filteredTransformations },
-        { responseType: 'blob', headers: { 'Content-Type': 'application/json' } }
-      );
-      const imageUrl = URL.createObjectURL(response.data);
-      setTransformedImageUrl(imageUrl);
-      setTransformedFileSize(response.data.size);
-    } catch (error) {
-      console.error('Transform error:', error);
+      // Use debouncing for range/number inputs (sliders, numeric inputs)
+      if (type === 'range' || type === 'number') {
+        applyTransformationsDebounced(newTransformations);
+      } else {
+        // Apply immediately for checkboxes and color inputs
+        applyTransformations(newTransformations);
+      }
     }
   };
 
