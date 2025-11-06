@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import UploadSection from './components/UploadSection';
 import TransformSection from './components/TransformSection';
 import ComparisonSection from './components/ComparisonSection';
@@ -10,51 +9,6 @@ import { comparisonStyles } from './styles/comparisonStyles';
 
 // const API_BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
 const API_BASE_URL = 'http://localhost:5000';
-
-const themeStyles = `
-  :root {
-    --theme-primary: #3674B5;
-    --theme-secondary: #578FCA;
-    --theme-accent: #578FCA;
-    --theme-background: #D1F8EF;
-  }
-  
-  body, .container {
-    background-color: var(--theme-background);
-  }
-  
-  .card-header.bg-info {
-    background-color: var(--theme-primary) !important;
-  }
-  
-  .card-header.bg-primary {
-    background-color: var(--theme-secondary) !important;
-  }
-  
-  .card-header.bg-success {
-    background-color: var(--theme-accent) !important;
-  }
-  
-  /* Heading Style */
-  .app-heading {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--theme-primary);
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-    margin-bottom: 1.5rem;
-  }
-  
-  /* For large screens, force row to be a flex container with same height columns */
-  @media (min-width: 992px) {
-    .full-height {
-      display: flex;
-      align-items: stretch;
-    }
-  }
-`;
-  
 function App() {
   const [file, setFile] = useState(null);
   const [filename, setFilename] = useState('');
@@ -299,13 +253,25 @@ function App() {
   };
 
   return (
-    <div className="container my-5">
-      <style>{themeStyles}</style>
+    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-200 p-4" data-theme="cartoonish">
       <style>{comparisonStyles}</style>
-      <h1 className="text-center mb-4 app-heading">Pixel Forge </h1>
-      <div className="row full-height">
-        {/* Preview column: 75% width on large screens (col-lg-9) */}
-        <div className="col-lg-9 order-2 order-lg-1 mb-4" style={{ display: 'flex', flexDirection: 'column' }}>
+      
+      {/* Cartoonish Header */}
+      <div className="text-center mb-8">
+        <h1 
+          className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-500 drop-shadow-2xl"
+            style={{ 
+              fontFamily: '"Comic Sans MS", "Comic Sans", cursive',
+              WebkitTextStroke: '2px black',
+              textShadow: '4px 4px 0px rgba(0,0,0,0.1), 6px 6px 0px rgba(255,107,157,0.2)'
+            }}>
+          Pixel Forge
+        </h1>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        {/* Preview Section - 75% width (3 cols out of 4) */}
+        <div className="lg:col-span-3 order-2 lg:order-1">
           {transformedImageUrl && originalImageUrl ? (
             <ComparisonSection
               transformedImageUrl={transformedImageUrl}
@@ -317,15 +283,19 @@ function App() {
               transformedFileSize={transformedFileSize}
             />
           ) : (
-            <div className="card shadow-sm flex-grow-1">
-              <div className="card-body text-center d-flex align-items-center justify-content-center">
-                <p>No image preview available.</p>
+            <div className="card bg-base-100 shadow-2xl border-4 border-primary rounded-3xl transform hover:rotate-1 transition-transform">
+              <div className="card-body flex items-center justify-center min-h-[400px]">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-neutral">No image preview available</p>
+                  <p className="text-base-content/60">Upload an image to get started!</p>
+                </div>
               </div>
             </div>
           )}
         </div>
-        {/* Control column: 25% width on large screens (col-lg-3) */}
-        <div className="col-lg-3 order-1 order-lg-2 d-flex flex-column gap-3">
+
+        {/* Controls Section - 25% width (1 col out of 4) */}
+        <div className="lg:col-span-1 order-1 lg:order-2 flex flex-col gap-4">
           <UploadSection 
             handleFileChange={handleFileChange}
             handleUpload={handleUpload}
