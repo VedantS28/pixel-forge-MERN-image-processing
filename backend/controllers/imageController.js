@@ -61,7 +61,11 @@ exports.uploadImage = async (req, res) => {
             uploadedAt: Date.now()
         });
 
-        const fileUrl = `http://localhost:5000/${filePath.replace(/\\/g, '/')}`; 
+        // Construct the base URL dynamically
+        // In production (Render), use the deployed URL
+        // In development, use localhost
+        const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
+        const fileUrl = `${baseUrl}/${filePath.replace(/\\/g, '/')}`;
 
         console.log(`[UPLOAD] Upload successful - Filename: ${fileName}, URL: ${fileUrl}`);
         res.status(201).json({
