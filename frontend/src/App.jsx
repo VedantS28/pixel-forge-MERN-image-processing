@@ -7,8 +7,7 @@ import CropModal from './components/CropModal';
 import ResizeRotateModal from './components/ResizeRotateModal';
 import { comparisonStyles } from './styles/comparisonStyles';
 
-// const API_BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
 function App() {
   const [file, setFile] = useState(null);
   const [filename, setFilename] = useState('');

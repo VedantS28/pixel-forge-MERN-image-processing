@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { cleanupOldSessions } = require('./config/tempStorage');
+const { cleanupOldSessions, cleanupOrphanedFiles } = require('./config/tempStorage');
 const imageRoutes = require('./routes/imageRoutes');
 
 const app = express();
@@ -25,6 +25,8 @@ app.use('/api/images', imageRoutes);
 setInterval(() => {
     console.log('[CLEANUP] Running periodic cleanup check...');
     cleanupOldSessions(600000); // 10 minutes in milliseconds (600000ms = 10min)
+    // Also remove orphaned files older than 1 hour
+    cleanupOrphanedFiles(60 * 60 * 1000);
 }, 5 * 60 * 1000); // Run every 5 minutes
 
 const PORT = process.env.PORT || 5000;
